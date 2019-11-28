@@ -80,27 +80,23 @@ mapS ::
   (a -> b)
   -> Store s a
   -> Store s b
-mapS =
-  error "todo: mapS"
+mapS f (Store s a) = Store (f . s) a
 
 duplicateS ::
   Store s a
   -> Store s (Store s a)
-duplicateS =
-  error "todo: duplicateS"
+duplicateS (Store s a) = Store (Store s) a
 
 extendS ::
   (Store s a -> b)
   -> Store s a
   -> Store s b
-extendS =
-  error "todo: extendS"
+extendS f s@(Store _ a) = Store (const . f $ s) a
 
 extractS ::
   Store s a
   -> a
-extractS =
-  error "todo: extractS"
+extractS (Store s a) = s a
 
 ----
 
@@ -193,8 +189,7 @@ modify ::
   -> (b -> b)
   -> a
   -> a
-modify =
-  error "todo: modify"
+modify l f a = set l a . f . get l $ a
 
 -- | An alias for @modify@.
 (%~) ::
@@ -223,8 +218,7 @@ infixr 4 %~
   -> b
   -> a
   -> a
-(.~) =
-  error "todo: (.~)"
+(.~) = flip . set
 
 infixl 5 .~
 
@@ -244,8 +238,7 @@ fmodify ::
   -> (b -> f b)
   -> a
   -> f a
-fmodify =
-  error "todo: fmodify"
+fmodify l f a = set l a <$> (f . get l $ a)
   
 -- |
 --
@@ -260,8 +253,7 @@ fmodify =
   -> f b
   -> a
   -> f a
-(|=) =
-  error "todo: (|=)"
+(|=) l = fmodify l . const
 
 infixl 5 |=
 
@@ -277,8 +269,7 @@ infixl 5 |=
 -- prop> let types = (x :: Int, y :: String) in setsetLaw fstL (x, y) z
 fstL ::
   Lens (x, y) x
-fstL =
-  error "todo: fstL"
+fstL = Lens $ \(x, y) -> Store (\x' -> (x', y)) x
 
 -- |
 --
@@ -292,8 +283,7 @@ fstL =
 -- prop> let types = (x :: Int, y :: String) in setsetLaw sndL (x, y) z
 sndL ::
   Lens (x, y) y
-sndL =
-  error "todo: sndL"
+sndL = Lens $ \(x, y) -> Store (\y' -> (x, y')) y
 
 -- |
 --
@@ -318,8 +308,10 @@ mapL ::
   Ord k =>
   k
   -> Lens (Map k v) (Maybe v)
-mapL =
-  error "todo: mapL"
+mapL k = Lens r
+  where r mapkv = Store f (Map.lookup k mapkv)
+                      where f (Just v) = Map.insert k v mapkv
+                            f _ = mapkv
 
 -- |
 --
@@ -370,6 +362,11 @@ compose =
   compose
 
 infixr 9 |.
+
+(.|) :: Lens a b -> Lens b c -> Lens a c
+(.|) = flip (|.)
+
+infixl 9 .|
 
 -- |
 --

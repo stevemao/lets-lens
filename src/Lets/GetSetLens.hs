@@ -16,6 +16,7 @@ module Lets.GetSetLens (
 , setL
 , compose
 , (|.)
+, (.|)
 , identity
 , product
 , (***)
@@ -324,6 +325,7 @@ compose (Lens f f') (Lens g g') = Lens l (f' . g')
 
 infixr 9 |.
 
+(.|) :: Lens a b -> Lens b c -> Lens a c
 (.|) = flip (|.)
 
 infixl 9 .|
