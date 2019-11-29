@@ -125,8 +125,7 @@ modify ::
   -> (a -> b)
   -> s
   -> t
-modify =
-  error "todo: modify"
+modify l f a = set l a . f . get l $ a
 
 -- | An alias for @modify@.
 (%~) ::
@@ -155,8 +154,7 @@ infixr 4 %~
   -> b
   -> s
   -> t
-(.~) =
-  error "todo: (.~)"
+(.~) = flip . set
 
 infixl 5 .~
 
@@ -176,8 +174,7 @@ fmodify ::
   -> (a -> f b)
   -> s
   -> f t 
-fmodify =
-  error "todo: fmodify"
+fmodify l f a = set l a <$> (f . get l $ a)
 
 -- |
 --
@@ -192,8 +189,7 @@ fmodify =
   -> f b
   -> s
   -> f t
-(|=) =
-  error "todo: (|=)"
+(|=) l = fmodify l . const
 
 infixl 5 |=
 
