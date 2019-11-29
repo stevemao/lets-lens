@@ -309,7 +309,7 @@ mapL ::
   k
   -> Lens (Map k v) (Maybe v)
 mapL k = Lens r
-  where r mapkv = Store f (Map.lookup k mapkv)
+  where r mapkv = Store f . Map.lookup k $ mapkv
                       where f (Just v) = Map.insert k v mapkv
                             f _ = mapkv
 
@@ -336,8 +336,11 @@ setL ::
   Ord k =>
   k
   -> Lens (Set k) Bool
-setL =
-  error "todo: setL"
+setL k = Lens r
+  where r setk = Store f bool
+                    where f True = Set.insert k setk
+                          f False = setk
+                          bool = Set.member k setk
 
 -- |
 --
@@ -350,8 +353,10 @@ compose ::
   Lens b c
   -> Lens a b
   -> Lens a c
-compose =
-  error "todo: compose"
+compose (Lens f) (Lens g) = Lens r
+  where r a = Store (setS ga . setS fGetSGa) . getS $ fGetSGa
+                where fGetSGa = f . getS $ ga
+                      ga = g a
 
 -- | An alias for @compose@.
 (|.) ::
