@@ -311,7 +311,7 @@ mapL ::
 mapL k = Lens r
   where r mapkv = Store f . Map.lookup k $ mapkv
                       where f (Just v) = Map.insert k v mapkv
-                            f _ = mapkv
+                            f _ = Map.delete k mapkv
 
 -- |
 --
@@ -339,7 +339,7 @@ setL ::
 setL k = Lens r
   where r setk = Store f bool
                     where f True = Set.insert k setk
-                          f False = setk
+                          f False = Set.delete k setk
                           bool = Set.member k setk
 
 -- |

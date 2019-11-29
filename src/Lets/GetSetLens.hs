@@ -270,7 +270,7 @@ mapL ::
   -> Lens (Map k v) (Maybe v)
 mapL k = Lens f g
   where f mapkv (Just v) = Map.insert k v mapkv
-        f mapkv _ = mapkv
+        f mapkv _ = Map.delete k mapkv
         g mapkv = Map.lookup k mapkv
 
 -- |
@@ -298,7 +298,7 @@ setL ::
   -> Lens (Set k) Bool
 setL k = Lens f g
   where f setk True = Set.insert k setk
-        f setk False = setk
+        f setk False = Set.delete k setk
         g setk = Set.member k setk
 
 -- |
@@ -547,4 +547,4 @@ setStreetOrState = set $ addressL .| streetL ||| stateL
 modifyCityUppercase ::
   Person
   -> Person
-modifyCityUppercase = modify (addressL .| localityL .| countryL) . fmap $ toUpper
+modifyCityUppercase = modify (addressL .| localityL .| cityL) . fmap $ toUpper
