@@ -382,8 +382,7 @@ infixl 9 .|
 -- 4
 identity ::
   Lens a a
-identity =
-  error "todo: identity"
+identity = Lens (\a -> Store (\a' -> a') a)
     
 -- |
 --
@@ -396,8 +395,11 @@ product ::
   Lens a b
   -> Lens c d
   -> Lens (a, c) (b, d)
-product =
-  error "todo: product"
+product l1 l2 = Lens (\(a, c) -> Store (\(b, d) -> (setter1 a b, setter2 c d)) (getter1 a, getter2 c))
+  where getter1 = get l1
+        getter2 = get l2
+        setter1 = set l1
+        setter2 = set l2
 
 -- | An alias for @product@.
 (***) ::
@@ -426,8 +428,11 @@ choice ::
   Lens a x
   -> Lens b x
   -> Lens (Either a b) x
-choice =
-  error "todo: choice"
+choice l1 l2 = Lens (\input -> Store (\update -> setter input update) . getter $ input)
+  where getter (Left a) = get l1 a
+        getter (Right a) = get l2 a
+        setter (Left a) = Left . set l1 a
+        setter (Right a) = Right . set l2 a
 
 -- | An alias for @choice@.
 (|||) ::
@@ -514,8 +519,7 @@ addressL =
 getSuburb ::
   Person
   -> String
-getSuburb =
-  error "todo: getSuburb"
+getSuburb = get $ addressL .| suburbL
 
 -- |
 --
@@ -528,8 +532,7 @@ setStreet ::
   Person
   -> String
   -> Person
-setStreet =
-  error "todo: setStreet"
+setStreet = set $ addressL .| streetL
 
 -- |
 --
@@ -541,8 +544,7 @@ setStreet =
 getAgeAndCountry ::
   (Person, Locality)
   -> (Int, String)
-getAgeAndCountry =
-  error "todo: getAgeAndCountry"
+getAgeAndCountry = get . product ageL $ countryL
 
 -- |
 --
@@ -553,8 +555,7 @@ getAgeAndCountry =
 -- (Person 28 "Mary" (Address "83 Mary Ln" "Maryland" (Locality "Some Other City" "Western Mary" "Maristan")),Address "15 Fred St" "Fredville" (Locality "Mary Mary" "Western Mary" "Maristan"))
 setCityAndLocality ::
   (Person, Address) -> (String, Locality) -> (Person, Address)
-setCityAndLocality =
-  error "todo: setCityAndLocality"
+setCityAndLocality = set . product (addressL .| localityL .| cityL) $ localityL
   
 -- |
 --
@@ -566,8 +567,7 @@ setCityAndLocality =
 getSuburbOrCity ::
   Either Address Locality
   -> String
-getSuburbOrCity =
-  error "todo: getSuburbOrCity"
+getSuburbOrCity = get $ suburbL ||| cityL
 
 -- |
 --
@@ -580,8 +580,7 @@ setStreetOrState ::
   Either Person Locality
   -> String
   -> Either Person Locality
-setStreetOrState =
-  error "todo: setStreetOrState"
+setStreetOrState = set $ addressL .| streetL ||| stateL
 
 -- |
 --
@@ -593,5 +592,4 @@ setStreetOrState =
 modifyCityUppercase ::
   Person
   -> Person
-modifyCityUppercase =
-  error "todo: modifyCityUppercase"
+modifyCityUppercase = modify (addressL .| localityL .| cityL) . fmap $ toUpper
