@@ -47,6 +47,7 @@ import Data.Set(Set)
 import qualified Data.Set as Set(insert, delete, member)
 import Lets.Data(Person(Person), Locality(Locality), Address(Address))
 import Prelude hiding (product)
+import qualified Control.Arrow as A((***))
 
 -- $setup
 -- >>> import qualified Data.Map as Map(fromList)
@@ -312,7 +313,7 @@ compose ::
   Lens b c
   -> Lens a b
   -> Lens a c
-compose (Lens f f') (Lens g g') = Lens l (f' . g')
+compose (Lens f f') (Lens g g') = Lens l $ f' . g'
   where l a = g a . f (g' a)
 
 -- | An alias for @compose@.
@@ -353,7 +354,7 @@ product ::
   -> Lens c d
   -> Lens (a, c) (b, d)
 product (Lens f f') (Lens g g') = Lens h i
-  where i (a, b) = (f' a, g' b)
+  where i = f' A.*** g'
         h (a, b) (c, d) = (f a c, g b d)
 
 -- | An alias for @product@.

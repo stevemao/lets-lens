@@ -51,6 +51,7 @@ import Data.Set(Set)
 import qualified Data.Set as Set(insert, delete, member)
 import Lets.Data(AlongsideLeft(AlongsideLeft, getAlongsideLeft), AlongsideRight(AlongsideRight, getAlongsideRight), Identity(Identity, getIdentity), Const(Const, getConst), IntAnd(IntAnd), Person(Person), Locality(Locality), Address(Address))
 import Prelude hiding (product)
+import qualified Control.Arrow as A((***))
 
 -- $setup
 -- >>> import qualified Data.Map as Map(fromList)
@@ -206,7 +207,7 @@ infixl 5 |=
 -- prop> let types = (x :: Int, y :: String) in setsetLaw fstL (x, y) z
 fstL ::
   Lens (a, x) (b, x) a b
-fstL = Lens $ \k s -> flip (,) (snd s) <$> k (fst s)
+fstL = Lens $ \k s -> (, snd s) <$> k (fst s)
 
 -- |
 --
@@ -332,7 +333,7 @@ product ::
   Lens s t a b
   -> Lens q r c d
   -> Lens (s, q) (t, r) (a, c) (b, d)
-product l1 l2 = Lens $ \f (a, c) -> (\(n1, n2) -> (setter1 a n1, setter2 c n2)) <$> f (getter1 a, getter2 c)
+product l1 l2 = Lens $ \f (a, c) -> (setter1 a A.*** setter2 c) <$> f (getter1 a, getter2 c)
   where getter1 = get l1
         getter2 = get l2
         setter1 = set l1

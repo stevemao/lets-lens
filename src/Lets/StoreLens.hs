@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 module Lets.StoreLens (
   Store(..)
 , setS
@@ -269,7 +271,7 @@ infixl 5 |=
 -- prop> let types = (x :: Int, y :: String) in setsetLaw fstL (x, y) z
 fstL ::
   Lens (x, y) x
-fstL = Lens $ \(x, y) -> Store (\x' -> (x', y)) x
+fstL = Lens $ \(x, y) -> Store (, y) x
 
 -- |
 --
@@ -283,7 +285,7 @@ fstL = Lens $ \(x, y) -> Store (\x' -> (x', y)) x
 -- prop> let types = (x :: Int, y :: String) in setsetLaw sndL (x, y) z
 sndL ::
   Lens (x, y) y
-sndL = Lens $ \(x, y) -> Store (\y' -> (x, y')) y
+sndL = Lens $ \(x, y) -> Store (x, ) y
 
 -- |
 --
@@ -382,7 +384,7 @@ infixl 9 .|
 -- 4
 identity ::
   Lens a a
-identity = Lens (\a -> Store (\a' -> a') a)
+identity = Lens . Store $ id
     
 -- |
 --
@@ -395,7 +397,7 @@ product ::
   Lens a b
   -> Lens c d
   -> Lens (a, c) (b, d)
-product l1 l2 = Lens (\(a, c) -> Store (\(b, d) -> (setter1 a b, setter2 c d)) (getter1 a, getter2 c))
+product l1 l2 = Lens $ \(a, c) -> Store (\(b, d) -> (setter1 a b, setter2 c d)) (getter1 a, getter2 c)
   where getter1 = get l1
         getter2 = get l2
         setter1 = set l1
@@ -428,7 +430,7 @@ choice ::
   Lens a x
   -> Lens b x
   -> Lens (Either a b) x
-choice l1 l2 = Lens (\input -> Store (\update -> setter input update) . getter $ input)
+choice l1 l2 = Lens $ \input -> Store (setter input) . getter $ input
   where getter (Left a) = get l1 a
         getter (Right a) = get l2 a
         setter (Left a) = Left . set l1 a
