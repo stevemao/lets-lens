@@ -119,7 +119,7 @@ over ::
   -> (a -> b)
   -> s
   -> t
-over f g = getIdentity . f (Identity . g)
+over f g = getIdentity . f (pure . g)
 
 -- | Here is @fmapT@ again, passing @traverse@ to @over@.
 fmapTAgain ::
@@ -140,22 +140,19 @@ type Set s t a b =
 sets ::
   ((a -> b) -> s -> t)
   -> Set s t a b  
-sets =
-  error "todo: sets"
+sets f toI = pure . f (\a -> getIdentity . toI $ a)
 
 mapped ::
   Functor f =>
   Set (f a) (f b) a b
-mapped =
-  error "todo: mapped"
+mapped f fa = pure $ getIdentity . f <$> fa
 
 set ::
   Set s t a b
   -> s
   -> b
   -> t
-set =
-  error "todo: set"
+set f s b = getIdentity $ f (const (pure b)) s
 
 ----
 
@@ -167,8 +164,7 @@ foldMapT ::
   (a -> b)
   -> t a
   -> b
-foldMapT =
-  error "todo: foldMapT"
+foldMapT f ta = getConst $ traverse (\a -> Const (f a)) ta
 
 -- | Let's refactor out the call to @traverse@ as an argument to @foldMapT@.
 foldMapOf ::
