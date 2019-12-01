@@ -295,8 +295,9 @@ _Just = prism Just f
 
 _Nothing ::
   Prism (Maybe a) (Maybe a) () ()
-_Nothing =
-  error "todo: _Nothing"
+_Nothing = prism (const Nothing) f
+  where f (Just _) = Right ()
+        f Nothing = Left Nothing
 
 setP ::
   Prism s t a b
