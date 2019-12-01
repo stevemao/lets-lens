@@ -284,12 +284,14 @@ prism ::
   -> (s -> Either t a)
   -> Prism s t a b
 -- TODO: do not try to get value out of either (when either side of type cannot check)
-prism f g = \pafb -> dimap g (either pure (fmap f)) (right pafb)
+prism f g = dimap g (either pure (fmap f)) . right
 
 _Just ::
   Prism (Maybe a) (Maybe b) a b
-_Just =
-  error "todo: _Just"
+-- TODO: same as above
+_Just pafb = dimap f g pafb
+  where f (Just a) = a
+        g fb = pure <$> fb
 
 _Nothing ::
   Prism (Maybe a) (Maybe a) () ()
