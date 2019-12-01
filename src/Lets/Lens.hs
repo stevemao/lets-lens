@@ -283,9 +283,8 @@ prism ::
   (b -> t)
   -> (s -> Either t a)
   -> Prism s t a b
-prism f g = \pafb -> dimap h (fmap f) pafb
-  where h s = case g s of
-                    Right a -> a
+-- TODO: do not try to get value out of either (when either side of type cannot check)
+prism f g = \pafb -> dimap g (either pure (fmap f)) (right pafb)
 
 _Just ::
   Prism (Maybe a) (Maybe b) a b
