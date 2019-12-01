@@ -273,20 +273,19 @@ type Prism s t a b =
 
 _Left ::
   Prism (Either a x) (Either b x) a b
-_Left =
-  error "todo: _Left"
+_Left = dimap id (traverseLeft id) . left
 
 _Right ::
   Prism (Either x a) (Either x b) a b 
-_Right =
-  error "todo: _Right"
+_Right = dimap id (traverseRight id) . right
 
 prism ::
   (b -> t)
   -> (s -> Either t a)
   -> Prism s t a b
-prism =
-  error "todo: prism"
+prism f g = \pafb -> dimap h (fmap f) pafb
+  where h s = case g s of
+                    Right a -> a
 
 _Just ::
   Prism (Maybe a) (Maybe b) a b
