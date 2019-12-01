@@ -236,14 +236,14 @@ both f (a, a') = (,) <$> (f a) <*> (f a')
 -- | Traverse the left side of @Either@.
 traverseLeft ::
   Traversal (Either a x) (Either b x) a b
-traverseLeft =
-  error "todo: traverseLeft"
+traverseLeft f (Left a) = Left <$> f a
+traverseLeft _ (Right x) = pure (Right x)
 
 -- | Traverse the right side of @Either@.
 traverseRight ::
   Traversal (Either x a) (Either x b) a b
-traverseRight =
-  error "todo: traverseRight"
+traverseRight f (Right a) = Right <$> f a
+traverseRight _ (Left x) = pure (Left x)
 
 type Traversal' a b =
   Traversal a a b b
