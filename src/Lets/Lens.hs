@@ -288,10 +288,10 @@ prism f g = dimap g (either pure (fmap f)) . right
 
 _Just ::
   Prism (Maybe a) (Maybe b) a b
--- TODO: same as above
-_Just pafb = dimap f g pafb
-  where f (Just a) = a
-        g fb = pure <$> fb
+-- TODO: same as aboveg
+_Just = prism Just f
+  where f (Just a) = Right a
+        f Nothing = Left Nothing
 
 _Nothing ::
   Prism (Maybe a) (Maybe a) () ()
