@@ -140,7 +140,7 @@ type Set s t a b =
 sets ::
   ((a -> b) -> s -> t)
   -> Set s t a b  
-sets f toI = pure . f (\a -> getIdentity . toI $ a)
+sets f toI = pure . f (getIdentity . toI)
 
 mapped ::
   Functor f =>
@@ -152,7 +152,7 @@ set ::
   -> s
   -> b
   -> t
-set f s b = getIdentity $ f (const (pure b)) s
+set f s b = getIdentity . f (const (pure b)) $ s
 
 ----
 
@@ -164,7 +164,7 @@ foldMapT ::
   (a -> b)
   -> t a
   -> b
-foldMapT f ta = getConst $ traverse (\a -> Const (f a)) ta
+foldMapT f = getConst . traverse (Const . f)
 
 -- | Let's refactor out the call to @traverse@ as an argument to @foldMapT@.
 foldMapOf ::
@@ -172,8 +172,7 @@ foldMapOf ::
   -> (a -> r)
   -> s
   -> r
-foldMapOf =
-  error "todo: foldMapOf"
+foldMapOf f g = getConst . f (Const . g)
 
 -- | Here is @foldMapT@ again, passing @traverse@ to @foldMapOf@.
 foldMapTAgain ::
@@ -181,8 +180,7 @@ foldMapTAgain ::
   (a -> b)
   -> t a
   -> b
-foldMapTAgain =
-  error "todo: foldMapTAgain"
+foldMapTAgain = foldMapOf traverse
 
 -- | Let's create a type-alias for this type of function.
 type Fold s t a b =
@@ -199,14 +197,12 @@ folds ::
   -> (a -> Const b a)
   -> s
   -> Const t s
-folds =
-  error "todo: folds"
+folds f toI = Const . f (getConst . toI)
 
 folded ::
   Foldable f =>
   Fold (f a) (f a) a a
-folded =
-  error "todo: folded"
+folded f fa = Const $ foldMap (getConst . f) fa
 
 ----
 
@@ -220,8 +216,7 @@ get ::
   Get a s a
   -> s
   -> a
-get =
-  error "todo: get"
+get f = getConst . f Const
 
 ----
 
@@ -236,8 +231,7 @@ type Traversal s t a b =
 -- | Traverse both sides of a pair.
 both ::
   Traversal (a, a) (b, b) a b
-both =
-  error "todo: both"
+both f (a, a') = (,) <$> (f a) <*> (f a')
 
 -- | Traverse the left side of @Either@.
 traverseLeft ::
