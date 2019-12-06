@@ -86,6 +86,7 @@ import Lets.Data(AlongsideLeft(AlongsideLeft, getAlongsideLeft), AlongsideRight(
 import Lets.Choice(Choice(left, right))
 import Lets.Profunctor(Profunctor(dimap))
 import Prelude hiding (product)
+import Data.Either.Combinators
 
 -- $setup
 -- >>> import qualified Data.Map as Map(fromList)
@@ -303,8 +304,7 @@ setP ::
   Prism s t a b
   -> s
   -> Either t a
-setP _ _ =
-  error "todo: setP"
+setP p = swapEither . p Left
 
 getP ::
   Prism s t a b
