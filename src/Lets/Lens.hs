@@ -480,9 +480,9 @@ setL ::
   Ord k =>
   k
   -> Lens (Set.Set k) (Set.Set k) Bool Bool
-setL =
-  error "todo: setL"
-
+setL k f setk = g <$> f (Set.member k setk)
+  where g True = Set.insert k setk
+        g False = Set.delete k setk
 -- |
 --
 -- >>> get (compose fstL sndL) ("abc", (7, "def"))
@@ -494,8 +494,7 @@ compose ::
   Lens s t a b
   -> Lens q r s t
   -> Lens q r a b
-compose _ _ =
-  error "todo: compose"
+compose = flip (.)
 
 -- | An alias for @compose@.
 (|.) ::
