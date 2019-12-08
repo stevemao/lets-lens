@@ -448,8 +448,9 @@ mapL ::
   Ord k =>
   k
   -> Lens (Map k v) (Map k v) (Maybe v) (Maybe v)
-mapL =
-  error "todo: mapL"
+mapL k f mapkv = case Map.lookup k mapkv of
+  jv@(Just v) -> const (Map.insert k v mapkv) <$> f jv
+  Nothing -> const (Map.delete k mapkv) <$> f Nothing
 
 -- |
 --
