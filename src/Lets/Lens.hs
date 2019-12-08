@@ -448,9 +448,9 @@ mapL ::
   Ord k =>
   k
   -> Lens (Map k v) (Map k v) (Maybe v) (Maybe v)
-mapL k f mapkv = case Map.lookup k mapkv of
-  jv@(Just v) -> const (Map.insert k v mapkv) <$> f jv
-  Nothing -> const (Map.delete k mapkv) <$> f Nothing
+mapL k f mapkv = g <$> f (Map.lookup k mapkv)
+  where g (Just v) = Map.insert k v mapkv
+        g Nothing = Map.delete k mapkv
 
 -- |
 --
