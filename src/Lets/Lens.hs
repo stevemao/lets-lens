@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TupleSections #-}
 
 module Lets.Lens (
   fmapT
@@ -335,8 +336,7 @@ modify ::
   -> (a -> b)
   -> s
   -> t
-modify _ _ _ =
-  error "todo: modify"
+modify f g = getIdentity . f (Identity . g)
 
 -- | An alias for @modify@.
 (%~) ::
@@ -365,8 +365,7 @@ infixr 4 %~
   -> b
   -> s
   -> t
-(.~) _ _ _ =
-  error "todo: (.~)"
+(.~) f b = getIdentity . f (const . pure $ b)
 
 infixl 5 .~
 
@@ -386,8 +385,7 @@ fmodify ::
   -> (a -> f b)
   -> s
   -> f t 
-fmodify _ _ _ =
-  error "todo: fmodify"
+fmodify = id
 
 -- |
 --
@@ -402,8 +400,7 @@ fmodify _ _ _ =
   -> f b
   -> s
   -> f t
-(|=) _ _ _ =
-  error "todo: (|=)"
+(|=) f fb = f (const (fb))
 
 infixl 5 |=
 
@@ -413,8 +410,7 @@ infixl 5 |=
 -- (30,"abc")
 fstL ::
   Lens (a, x) (b, x) a b
-fstL =
-  error "todo: fstL"
+fstL f (a, x) = (, x) <$> f a
 
 -- |
 --
@@ -422,8 +418,7 @@ fstL =
 -- (13,"abcdef")
 sndL ::
   Lens (x, a) (x, b) a b
-sndL =
-  error "todo: sndL"
+sndL f (x, a) = (x, ) <$> f a
 
 -- |
 --
