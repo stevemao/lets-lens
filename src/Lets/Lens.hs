@@ -304,14 +304,15 @@ setP ::
   Prism s t a b
   -> s
   -> Either t a
+-- TODO: p a (f b) is a function!
 setP p = swapEither . p Left
 
 getP ::
   Prism s t a b
   -> b
   -> t
-getP _ _ =
-  error "todo: getP"
+-- TODO: look at this again
+getP p = getIdentity . getTagged . p . Tagged . Identity
 
 type Prism' a b =
   Prism a a b b
