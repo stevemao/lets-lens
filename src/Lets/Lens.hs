@@ -668,7 +668,7 @@ setStreet = set $ addressL . streetL
 getAgeAndCountry ::
   (Person, Locality)
   -> (Int, String)
-getAgeAndCountry = get $ product ageL cityL
+getAgeAndCountry = get $ product ageL countryL
 
 -- |
 --
