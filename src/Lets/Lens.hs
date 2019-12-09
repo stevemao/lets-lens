@@ -779,5 +779,4 @@ intOrP = prism IntOrIsNot g
 intOrLengthEven ::
   IntOr [a]
   -> IntOr Bool
-intOrLengthEven =
-  error "todo: intOrLengthEven"
+intOrLengthEven = over intOrP $ even . length
