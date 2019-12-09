@@ -528,8 +528,12 @@ product ::
   Lens s t a b
   -> Lens q r c d
   -> Lens (s, q) (t, r) (a, c) (b, d)
-product _ _ =
-  error "todo: product"
+-- TODO: not sure why OpticPolyLens' way not working
+-- TODO: AlongsideLeft & AlongsideRight can "change" scope
+product l1 l2 f (s, q) = 
+  getAlongsideRight (l2 (\b -> AlongsideRight (
+  getAlongsideLeft (l1 (\a -> AlongsideLeft (
+  f (a, b))) s))) q)
 
 -- | An alias for @product@.
 (***) ::
