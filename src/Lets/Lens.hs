@@ -558,8 +558,9 @@ choice ::
   Lens s t a b
   -> Lens q r a b
   -> Lens (Either s q) (Either t r) a b
-choice _ _ =
-  error "todo: choice"
+-- TODO: not sure why OpticPolyLens' way not working
+choice f _ h (Left s) = Left <$> f h s
+choice _ g h (Right q) = Right <$> g h q
 
 -- | An alias for @choice@.
 (|||) ::
