@@ -754,11 +754,9 @@ traverseLocality f (Locality city state country) = Locality <$> f city <*> f sta
 -- IntOrIsNot "abc"
 intOrIntP ::
   Prism' (IntOr a) Int
--- TODO: not correct. Not that simple
-intOrIntP p = dimap f g p
-  where f (IntOrIs i) = i
-        f (IntOrIsNot a) = 0
-        g fint = IntOrIs <$> fint
+intOrIntP = prism IntOrIs g
+  where g a@(IntOrIsNot _) = Left a
+        g (IntOrIs a) = Right a
 
 intOrP ::
   Prism (IntOr a) (IntOr b) a b
