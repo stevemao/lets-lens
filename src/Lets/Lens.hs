@@ -531,9 +531,9 @@ product ::
 -- TODO: not sure why OpticPolyLens' way not working
 -- TODO: AlongsideLeft & AlongsideRight can "change" scope
 product l1 l2 f (s, q) = 
-  getAlongsideRight (l2 (\b -> AlongsideRight (
   getAlongsideLeft (l1 (\a -> AlongsideLeft (
-  f (a, b))) s))) q)
+  getAlongsideRight (l2 (\b -> AlongsideRight (
+  f (a, b))) q))) s)
 
 -- | An alias for @product@.
 (***) ::
