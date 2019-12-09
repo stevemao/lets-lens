@@ -248,8 +248,8 @@ mapL ::
   -> Lens (Map k v) (Map k v) (Maybe v) (Maybe v)
 mapL k = Lens r
   where r f mapkv = ff <$> (f . Map.lookup k $ mapkv)
-                                    where ff (Just v) = Map.insert k v mapkv
-                                          ff Nothing = Map.delete k mapkv
+          where ff (Just v) = Map.insert k v mapkv
+                ff Nothing = Map.delete k mapkv
 
 -- |
 --

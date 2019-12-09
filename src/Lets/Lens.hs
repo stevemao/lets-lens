@@ -642,8 +642,7 @@ intAndL p (IntAnd n a) =
 getSuburb ::
   Person
   -> String
-getSuburb =
-  error "todo: getSuburb"
+getSuburb = get $ addressL . suburbL
 
 -- |
 --
@@ -656,8 +655,7 @@ setStreet ::
   Person
   -> String
   -> Person
-setStreet =
-  error "todo: setStreet"
+setStreet = set $ addressL . streetL
 
 -- |
 --
@@ -695,7 +693,7 @@ getSuburbOrCity ::
   Either Address Locality
   -> String
 getSuburbOrCity =
-  error "todo: getSuburbOrCity"
+  get (suburbL ||| cityL)
 
 -- |
 --
@@ -709,7 +707,7 @@ setStreetOrState ::
   -> String
   -> Either Person Locality
 setStreetOrState =
-  error "todo: setStreetOrState"
+  set (streetL |. addressL ||| stateL)
 
 -- |
 --
@@ -722,7 +720,7 @@ modifyCityUppercase ::
   Person
   -> Person
 modifyCityUppercase =
-  error "todo: modifyCityUppercase"
+  cityL |. localityL |. addressL %~ map toUpper
 
 -- |
 --
@@ -735,7 +733,7 @@ modifyIntAndLengthEven ::
   IntAnd [a]
   -> IntAnd Bool
 modifyIntAndLengthEven =
-  error "todo: modifyIntAndLengthEven"
+  intAndL %~ even . length
 
 ----
 
@@ -745,8 +743,7 @@ modifyIntAndLengthEven =
 -- Locality "ABC" "DEF" "GHI"
 traverseLocality ::
   Traversal' Locality String
-traverseLocality =
-  error "todo: traverseLocality"
+traverseLocality f (Locality city state country) = Locality <$> f city <*> f state <*> f country
 
 -- |
 --
@@ -757,8 +754,11 @@ traverseLocality =
 -- IntOrIsNot "abc"
 intOrIntP ::
   Prism' (IntOr a) Int
-intOrIntP =
-  error "todo: intOrIntP"
+-- TODO: not correct. Not that simple
+intOrIntP p = dimap f g p
+  where f (IntOrIs i) = i
+        f (IntOrIsNot a) = 0
+        g fint = IntOrIs <$> fint
 
 intOrP ::
   Prism (IntOr a) (IntOr b) a b
