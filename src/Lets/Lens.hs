@@ -760,8 +760,11 @@ intOrIntP = prism IntOrIs g
 
 intOrP ::
   Prism (IntOr a) (IntOr b) a b
-intOrP =
-  error "todo: intOrP"
+-- TODO: left side (IntOrIs a) :: (IntOr a), right side (IntOrIs a) :: (IntOr b)
+intOrP = prism IntOrIsNot g
+  where g :: ((IntOr a) -> Either (IntOr b) a)
+        g (IntOrIsNot a) = Right a
+        g (IntOrIs a) = Left (IntOrIs a)
 
 -- |
 --
